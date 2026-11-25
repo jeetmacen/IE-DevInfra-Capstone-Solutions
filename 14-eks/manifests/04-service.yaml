@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: project14-public
+  namespace: project14
+  labels:
+    app: project14-web
+    project: project14
+spec:
+  type: LoadBalancer
+  selector:
+    app: project14-web
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: http

@@ -1,0 +1,37 @@
+# Terraform state, plans, and local configuration
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+*.plan
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+!*.tfvars.json.example
+crash.log
+crash.*.log
+.terraformrc
+terraform.rc
+
+# Local credentials and environment files
+.aws/
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor temporary files
+*.swp
+*.swo
+*~
+.idea/
+GUIDE.md
+Questions.md

@@ -1,0 +1,14 @@
+output "instance_id" {
+  description = "ID of the web server."
+  value       = aws_instance.web.id
+}
+
+output "public_ip" {
+  description = "Public IPv4 address of the web server."
+  value       = aws_instance.web.public_ip
+}
+
+output "url" {
+  description = "URL of the hosted page."
+  value       = "http://${aws_instance.web.public_ip}/"
+}

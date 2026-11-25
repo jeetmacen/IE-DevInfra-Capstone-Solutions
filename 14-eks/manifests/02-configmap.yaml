@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: project14-web-content
+  namespace: project14
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Project 14 - Amazon EKS</title>
+      <style>
+        body {
+          margin: 0;
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #131a22, #232f3e);
+          color: #ffffff;
+          font-family: Arial, sans-serif;
+        }
+        .card {
+          width: min(720px, 85%);
+          padding: 48px;
+          text-align: center;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 16px;
+        }
+        h1 {
+          color: #ff9900;
+          margin-bottom: 16px;
+        }
+        .status {
+          display: inline-block;
+          margin-top: 16px;
+          padding: 10px 18px;
+          color: #102a12;
+          background: #8ee595;
+          border-radius: 24px;
+          font-weight: bold;
+        }
+      </style>
+    </head>
+    <body>
+      <main class="card">
+        <h1>Project 14: Amazon EKS</h1>
+        <h2>Application deployed successfully</h2>
+        <p>This application is running inside a Kubernetes Deployment.</p>
+        <p>It is publicly exposed through an AWS Load Balancer.</p>
+        <div class="status">EKS Application is Running</div>
+      </main>
+    </body>
+    </html>

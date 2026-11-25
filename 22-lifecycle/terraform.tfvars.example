@@ -1,0 +1,4 @@
+# Copy to terraform.tfvars to override defaults.
+aws_region      = "us-east-1"
+log_prefix      = "logs/"
+expiration_days = 30

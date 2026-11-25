@@ -1,0 +1,4 @@
+- `/srv/p05-private` is owned by `root:p05team` with mode `2770`: the group can read, write and traverse; others have no access. The setgid bit makes new files inherit the `p05team` group.
+- `notes` is `0660`: owner and group read/write.
+- `p05writer` is in `p05team`, so its write and read succeed.
+- `p05guest` is not in the group and cannot even enter the directory, so both read and write are denied.

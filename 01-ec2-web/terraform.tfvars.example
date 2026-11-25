@@ -1,0 +1,4 @@
+# Copy to terraform.tfvars to override the defaults in variables.tf.
+aws_region    = "us-east-1"
+project_name  = "p01-web"
+instance_type = "t3.micro"

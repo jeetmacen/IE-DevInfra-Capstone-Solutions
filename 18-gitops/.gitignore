@@ -1,0 +1,17 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+!*.tfvars.json.example
+crash*.log
+.terraformrc
+terraform.rc
+
+.aws/
+.env
+.env.*
+!.env.example
+!.env.*.example

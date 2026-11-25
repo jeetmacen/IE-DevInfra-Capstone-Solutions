@@ -1,0 +1,7 @@
+aws_region             = "ap-south-1"
+project_name           = "project23-iam-role"
+instance_type          = "t3.micro"
+allowed_s3_bucket_arns = []
+
+# For least privilege, use a specific bucket instead:
+# allowed_s3_bucket_arns = ["arn:aws:s3:::your-bucket-name"]

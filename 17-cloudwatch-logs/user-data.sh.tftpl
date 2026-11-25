@@ -1,0 +1,29 @@
+#!/bin/bash
+set -euxo pipefail
+
+exec > >(tee -a /var/log/cloud-init-output.log) 2>&1
+
+echo "P17_BOOT_START"
+echo "Project 17 CloudWatch boot-log forwarding started"
+echo "Boot timestamp: $(date --iso-8601=seconds)"
+echo "Hostname: $(hostname)"
+echo "Kernel: $(uname -r)"
+
+dnf install -y amazon-cloudwatch-agent
+mkdir -p /opt/aws/amazon-cloudwatch-agent/etc
+
+cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json <<'CWAGENT'
+${cloudwatch_agent_config}
+CWAGENT
+
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl   -a fetch-config   -m ec2   -s   -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+
+systemctl enable amazon-cloudwatch-agent
+systemctl restart amazon-cloudwatch-agent
+
+echo "CloudWatch Agent status:"
+systemctl --no-pager status amazon-cloudwatch-agent || true
+
+echo "P17_EXPECTED_BOOT_OUTPUT"
+echo "CloudWatch Agent configured successfully"
+echo "P17_BOOT_COMPLETE"

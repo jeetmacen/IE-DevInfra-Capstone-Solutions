@@ -1,0 +1,61 @@
+#!/bin/bash
+set -euo pipefail
+
+exec > >(tee /var/log/project19-user-data.log | logger -t user-data -s 2>/dev/console) 2>&1
+
+BUCKET_NAME="${bucket_name}"
+AWS_REGION="${aws_region}"
+
+# Amazon Linux 2023 normally includes AWS CLI v2 and SSM Agent.
+dnf install -y cronie tar awscli
+systemctl enable --now crond
+systemctl enable --now amazon-ssm-agent || true
+
+install -d -m 0755 /var/log/project19 /var/lib/project19-backups
+install -m 0644 /dev/null /var/log/project19/application.log
+
+cat > /usr/local/bin/project19-backup.sh <<'SCRIPT'
+#!/bin/bash
+set -euo pipefail
+
+BUCKET_NAME="${bucket_name}"
+AWS_REGION="${aws_region}"
+LOG_DIR="/var/log/project19"
+WORK_DIR="/var/lib/project19-backups"
+TIMESTAMP="$(date -u +'%Y-%m-%dT%H-%M-%SZ')"
+
+TOKEN="$(curl --fail --silent --show-error --request PUT \
+  --header 'X-aws-ec2-metadata-token-ttl-seconds: 21600' \
+  http://169.254.169.254/latest/api/token)"
+
+INSTANCE_ID="$(curl --fail --silent --show-error \
+  --header "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/instance-id)"
+
+echo "$(date -u --iso-8601=seconds) Project 19 scheduled log entry" >> "$LOG_DIR/application.log"
+
+ARCHIVE="$WORK_DIR/log-backup-$INSTANCE_ID-$TIMESTAMP.tar.gz"
+tar -czf "$ARCHIVE" -C /var/log project19
+
+/usr/bin/aws s3 cp "$ARCHIVE" \
+  "s3://$BUCKET_NAME/backups/$INSTANCE_ID/$(basename "$ARCHIVE")" \
+  --region "$AWS_REGION" \
+  --sse AES256 \
+  --only-show-errors
+
+rm -f "$ARCHIVE"
+echo "$(date -u --iso-8601=seconds) uploaded backup for $INSTANCE_ID" >> /var/log/project19-backup.log
+SCRIPT
+
+chmod 0750 /usr/local/bin/project19-backup.sh
+
+cat > /etc/cron.d/project19-s3-backup <<'CRON'
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+${backup_schedule} root /usr/local/bin/project19-backup.sh >> /var/log/project19-cron.log 2>&1
+CRON
+
+chmod 0644 /etc/cron.d/project19-s3-backup
+
+# Create the first object immediately so the lab can be verified without waiting for cron.
+/usr/local/bin/project19-backup.sh
